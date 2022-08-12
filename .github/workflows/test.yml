@@ -1,0 +1,32 @@
+name: Java CI
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: 8
+        distribution: 'temurin'
+        cache: maven
+    - name: change branch
+      run: git checkout main
+    - name: Build with Maven
+      run: mvn clean compile install -Pprod
+    - name: copy into file
+      run: echo "${{ secrets.PEM_FILE }}" > key.pem
+    - name: manage file permissions
+      run: chmod 400 key.pem
+    - name: login into ssh
+      run: ssh -i key.pem ubuntu@${{ secrets.EC2_IP }}
+    - name: Go to path
+      run: cd /home/ubuntu/backend/turno-backend-master
+    - name: Remove the JAR from app server
+      run: rm -rf turno-backend-master-1.0-SNAPSHOT.jar
+    - name: Copy JAR built in step 1 from local to app server
+      run: sudo scp -i ${{ secrets.PEM_FILE }} target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
+    - name: Run the new JAR
+      run: java -jar DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
