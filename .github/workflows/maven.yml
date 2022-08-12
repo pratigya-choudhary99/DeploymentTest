@@ -33,8 +33,9 @@ jobs:
     - name: view file
       run: cat key.pem
     - run: ls
+    - run: pwd
     - name: login into ssh
-      run: ssh -i key.pem -o UserKnownHostsFile=known_hosts ubuntu@${{ secrets.EC2_IP }}
+      run: ssh -i key.pem -o UserKnownHostsFile=github/home/known_hosts ubuntu@${{ secrets.EC2_IP }}
     - name: Copy JAR built in step 1 from local to app server
       run: sudo scp -i key.pem target/DeploymentTest-0.0.1-SNAPSHOT.jar -o UserKnownHostsFile=known_hosts ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
     - name: Run the new JAR
