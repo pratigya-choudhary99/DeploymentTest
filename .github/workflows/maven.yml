@@ -30,7 +30,7 @@ jobs:
     - name: view file
       run: cat key.pem
     - name: login into ssh
-      run: ssh -i key.pem ubuntu@$13.232.144.192
+      run: ssh -i key.pem ubuntu@13.232.144.192
     - name: Go to path
       run: cd /home/ubuntu/backend/turno-backend-master
     - name: Remove the JAR from app server
