@@ -32,7 +32,7 @@ jobs:
       run: sudo chmod 600 known_hosts
     - name: view file
       run: cat key.pem
-    - run: ls
+    - run: ls target
     - run: pwd
     - name: Copy JAR built in step 1 from local to app server
       run: sudo scp -i key.pem target/DeploymentTest-0.0.1-SNAPSHOT.jar -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }}
