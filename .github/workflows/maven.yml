@@ -29,12 +29,6 @@ jobs:
       run: chmod 400 key.pem
     - name: view file
       run: cat key.pem
-    - name: login into ssh
-      run: ssh -i key.pem ubuntu@${{ secrets.EC2_IP }} cd /home/ubuntu/backend/turno-backend-master
-    - name: Go to path
-      run: ls
-    - name: Remove the JAR from app server
-      run: rm -rf turno-backend-master-1.0-SNAPSHOT.jar
     - name: Copy JAR built in step 1 from local to app server
       run: sudo scp -i ${{ secrets.PEM_FILE }} turno-backend-master-1.0-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
     - name: Run the new JAR
