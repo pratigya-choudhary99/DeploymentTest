@@ -23,8 +23,10 @@ jobs:
       run: git checkout main
     - name: Build with Maven
       run: mvn clean compile install -Pprod
+    - name: copy into file
+      run: echo "${{ secrets.PEM_FILE }}" > key.pem
     - name: login into ssh
-      run: ssh -i ${{ secrets.PEM_FILE }} ubuntu@${{ secrets.EC2_IP }}
+      run: ssh -i key.pem ubuntu@${{ secrets.EC2_IP }}
     - name: Go to path
       run: cd /home/ubuntu/backend/turno-backend-master
     - name: Remove the JAR from app server
