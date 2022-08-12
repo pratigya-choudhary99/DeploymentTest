@@ -27,15 +27,13 @@ jobs:
       run: echo "${{ secrets.PEM_FILE }}" > key.pem
     - name: manage file permissions
       run: chmod 400 key.pem
-    - name: create .ssh
-      run: mkdir -p .ssh
-    - run: sudo echo "${{ secrets.EC2_IP }} ssh-rsa ${{ secrets.PEM_FILE }}" > ~/.ssh/known_hosts
+    - run: sudo echo "${{ secrets.EC2_IP }} ssh-rsa ${{ secrets.PEM_FILE }}" > known_hosts
     - name: update property
-      run: sudo chmod 600 ~/.ssh/known_hosts
+      run: sudo chmod 600 known_hosts
     - name: view file
       run: cat key.pem
     - name: Copy JAR built in step 1 from local to app server
-      run: sudo scp -i key.pem target/turno-backend-master-1.0-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
+      run: sudo scp -i key.pem target/DeploymentTest-0.0.1-SNAPSHOT.jar -o UserKnownHostsFile=known_hosts ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
     - name: Run the new JAR
       run: java -jar turno-backend-master-1.0-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
       
