@@ -27,7 +27,7 @@ jobs:
       run: echo "${{ secrets.PEM_FILE }}" > key.pem
     - name: manage file permissions
       run: chmod 400 key.pem
-    - run: sudo echo "${{ secrets.EC2_IP }} ssh-rsa ${{ secrets.PEM_FILE }}" > known_hosts
+    - run: ssh-keyscan ${{ secrets.EC2_IP }} > known_hosts
     - name: update property
       run: sudo chmod 600 known_hosts
     - name: view file
