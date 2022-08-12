@@ -40,7 +40,7 @@ jobs:
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }}
     - run: cd /home/ubuntu/backend/turno-backend-master
     - name: Run the new JAR
-      run: java -jar turno-backend-master-1.0-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
+      run: java -jar DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
       
       
       
