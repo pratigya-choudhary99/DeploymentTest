@@ -19,7 +19,22 @@ jobs:
         java-version: 8
         distribution: 'temurin'
         cache: maven
-    - name: Checkout env/sbox
+    - name: change branch
       run: git checkout main
     - name: Build with Maven
       run: mvn clean compile install -Pprod
+    - name: login into ssh
+      run: ssh -i ${{ secrets.PEM_FILE }} ubuntu@${{ secrets.EC2_IP }}
+    - name: Go to path
+      run: cd /home/ubuntu/backend/turno-backend-master
+    - name: Remove the JAR from app server
+      run: rm -rf turno-backend-master-1.0-SNAPSHOT.jar
+    - name: Copy JAR built in step 1 from local to app server
+      run: sudo scp -i ${{ secrets.PEM_FILE }} turno-backend-master-1.0-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
+    - name: Run the new JAR
+      run: java -jar turno-backend-master-1.0-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
+      
+      
+      
+      
+      
