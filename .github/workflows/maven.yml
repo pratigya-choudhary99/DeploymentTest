@@ -28,7 +28,7 @@ jobs:
     - name: manage file permissions
       run: chmod 400 key.pem
     - name: create .ssh
-    - run: mkdir -p .ssh
+      run: mkdir -p .ssh
     - run: echo "${{ secrets.EC2_IP }} ssh-rsa ${{ secrets.PEM_FILE }}" > ~/.ssh/known_hosts
     - name: update property
     - run: sudo chmod 600 ~/.ssh/known_hosts
