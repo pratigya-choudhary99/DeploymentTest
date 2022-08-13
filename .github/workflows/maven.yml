@@ -36,6 +36,7 @@ jobs:
     - run: pwd
     - name: Copy JAR built in step 1 from local to app server
       run: sudo scp -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
+    - run: yes
     - name: login into ssh
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }}
     - run: cd /home/ubuntu/backend/turno-backend-master
