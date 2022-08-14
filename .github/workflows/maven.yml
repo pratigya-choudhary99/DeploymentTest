@@ -37,8 +37,8 @@ jobs:
     - name: kill process
       env:
         PID_VAR : $(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")
-      if: ${{PID_VAR}}
-      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "kill -9 $(lsof -t -i:8080) &> output.txt"
+      run: echo ${PID_VAR}
+    - run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "kill -9 $(lsof -t -i:8080) &> output.txt"
     - name: Run the new JAR
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "java -jar /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> /home/ubuntu/backend/turno-backend-master/javaOutput.log &"
       
