@@ -38,9 +38,9 @@ jobs:
       run: scp -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/backend/turno-backend-master
     - name: login into ssh
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }}
-    - run: cd /home/ubuntu/backend/turno-backend-master
+    - run: pwd
     - name: Run the new JAR
-      run: java -jar DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} java -jar DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> javaOutput.log &
       
       
       
