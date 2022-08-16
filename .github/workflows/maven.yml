@@ -19,8 +19,7 @@ jobs:
         java-version: 8
         distribution: 'temurin'
         cache: maven
-    - name: clone
-      run: git remote set-url origin git@github.com:turnoclub/turno-backend-master.git
+
     - name: change branch
       run: git checkout main
     - name: Build with Maven
@@ -52,7 +51,8 @@ jobs:
     
     
     
-    
+    - name: clone
+      run: git remote set-url origin git@github.com:turnoclub/turno-backend-master.git
     - name: change branch
       run: git checkout env/sbox
     - name: Build with Maven
