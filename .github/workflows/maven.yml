@@ -55,7 +55,7 @@ jobs:
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "rm -rf /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar"
     - name: Copy JAR built in step 1 from local to app server
       run: scp -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP_2 }}:/home/ubuntu/backend/turno-backend-master
-    - run: echo "ENV_PID2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - run: echo "ENV_PID2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")" >> $GITHUB_ENV
     - name: kill process
       run: export
     - run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "kill -9 $ENV_PID"
@@ -64,7 +64,7 @@ jobs:
     - name: sleep
       run: sleep 5
     - name: PID 
-      run: echo "ENV_PID_DEPLOYED2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP_2 }} "lsof -t -i:8080")" >> $GITHUB_ENV
+      run: echo "ENV_PID_DEPLOYED2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "lsof -t -i:8080")" >> $GITHUB_ENV
     - name: Check If deployement is successful
       if: ${{env.ENV_PID_DEPLOYED2 == ''}}
       run: exit 1
