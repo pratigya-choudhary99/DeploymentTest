@@ -47,5 +47,26 @@ jobs:
     - name: Check If deployement is successful
       if: ${{env.ENV_PID_DEPLOYED == ''}}
       run: exit 1
+    - name: Start Deploment of seccond server
+      run: ssh-keyscan ${{ secrets.EC2_IP_2 }} > known_hosts2
+    - name: update property
+      run: sudo chmod 600 known_hosts2
+    - name: remove old jar file
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "rm -rf /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar"
+    - name: Copy JAR built in step 1 from local to app server
+      run: scp -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP_2 }}:/home/ubuntu/backend/turno-backend-master
+    - run: echo "ENV_PID2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - name: kill process
+      run: export
+    - run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "kill -9 $ENV_PID"
+    - name: Run the new JAR
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "java -jar /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> /home/ubuntu/backend/turno-backend-master/javaOutput.log &"
+    - name: sleep
+      run: sleep 5
+    - name: PID 
+      run: echo "ENV_PID_DEPLOYED2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP_2 }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - name: Check If deployement is successful
+      if: ${{env.ENV_PID_DEPLOYED2 == ''}}
+      run: exit 1
     
     
