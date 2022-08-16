@@ -43,7 +43,7 @@ jobs:
     - run: echo "ENV_PID_DEPLOYED=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")" >> $GITHUB_ENV
     - name: Check If deployement is successful
       if: ${{env.ENV_PID_DEPLOYED}} == ""
-      run: sleep 10s
+      run: sleep 10
       
       
       
