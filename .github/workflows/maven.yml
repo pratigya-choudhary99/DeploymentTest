@@ -57,8 +57,8 @@ jobs:
       run: scp -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP_2 }}:/home/ubuntu/backend/turno-backend-master
     - run: echo "ENV_PID2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")" >> $GITHUB_ENV
     - name: kill process
-      if: ${{env.ENV_PID != ''}}
-      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "kill -9 $ENV_PID"
+      if: ${{env.ENV_PID2 != ''}}
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "kill -9 $ENV_PID2"
     - name: Run the new JAR
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts2 ubuntu@${{ secrets.EC2_IP_2 }} "java -jar /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> /home/ubuntu/backend/turno-backend-master/javaOutput.log &"
     - name: sleep
