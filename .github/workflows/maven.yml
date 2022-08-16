@@ -44,7 +44,7 @@ jobs:
     - name: sleep
       run: sleep 10
     - name: Check If deployement is successful
-      if: ${{env.ENV_PID_DEPLOYED}} == ""
+      if: ${{env.ENV_PID_DEPLOYED}} >0
       run: exit 1
       
       
