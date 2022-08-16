@@ -47,7 +47,7 @@ jobs:
     - name: Check If deployement is successful
       run: echo "${{env.ENV_PID_DEPLOYED}}"
     - name: deployment
-      if: ${{env.ENV_PID_DEPLOYED}} == -1 
+      if: ${{env.ENV_PID_DEPLOYED == ''}}
       run: exit 1
       
       
