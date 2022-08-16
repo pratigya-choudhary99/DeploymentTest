@@ -54,7 +54,7 @@ jobs:
     
     
     - name: change branch
-      run: git checkout origin/env/sbox
+      run: git checkout env/sbox
     - name: Build with Maven
       run: mvn clean compile install -Pprod
     - name: remove old jar file
