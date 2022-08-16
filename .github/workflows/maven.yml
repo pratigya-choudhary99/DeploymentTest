@@ -54,16 +54,9 @@ jobs:
     
     
     - name: change branch
-      run: git checkout origin/main
+      run: git checkout origin/env/sbox
     - name: Build with Maven
       run: mvn clean compile install -Pprod
-    - name: copy into file
-      run: echo "${{ secrets.PEM_FILE }}" > key.pem
-    - name: manage file permissions
-      run: chmod 400 key.pem
-    - run: ssh-keyscan ${{ secrets.EC2_IP }} > known_hosts
-    - name: update property
-      run: sudo chmod 600 known_hosts
     - name: remove old jar file
       run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts ubuntu@${{ secrets.EC2_IP }} "rm -rf /home/ubuntu/backend/turno-backend-master/turno-backend-master-0.0.1-SNAPSHOT.jar"
     - name: Copy JAR built in step 1 from local to app server
