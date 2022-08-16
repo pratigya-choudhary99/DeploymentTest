@@ -54,7 +54,7 @@ jobs:
     
     
     - name: change branch
-      run: git checkout master
+      run: git checkout origin
     - name: Build with Maven
       run: mvn clean compile install -Pprod
     - name: copy into file
