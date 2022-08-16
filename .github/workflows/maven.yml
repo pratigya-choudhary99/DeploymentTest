@@ -52,9 +52,9 @@ jobs:
     
     
     - name: clone
-      run: git clone git@github.com:turnoclub/turno-backend-master.git
+      run: git remote set-url origin git@github.com:turnoclub/turno-backend-master.git
     - name: change branch
-      run: git checkout origin/env/sbox
+      run: git checkout env/sbox
     - name: Build with Maven
       run: mvn clean compile install -Pprod
     - name: remove old jar file
