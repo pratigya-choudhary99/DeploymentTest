@@ -52,7 +52,7 @@ jobs:
     
     
     - name: clone
-      run: git clone https://github.com/turnoclub/turno-backend-master.git
+      run: git clone git@github.com:turnoclub/turno-backend-master.git
     - name: change branch
       run: git checkout origin/env/sbox
     - name: Build with Maven
