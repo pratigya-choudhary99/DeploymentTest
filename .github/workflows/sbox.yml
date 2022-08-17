@@ -1,0 +1,70 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    environment: sbox
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: 8
+        distribution: 'temurin'
+        cache: maven
+    - name: change branch
+      run: git checkout main
+    - name: Build with Maven
+      run: mvn clean compile install -Pprod
+    - name: copy into file
+      run: echo "${{ secrets.PEM_FILE }}" > key.pem
+    - name: manage file permissions
+      run: chmod 400 key.pem
+    - run: ssh-keyscan ${{ secrets.EC2_IP_1 }} > known_hosts_1
+    - name: update property
+      run: sudo chmod 600 known_hosts_1
+    - name: remove old jar file
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_1 ubuntu@${{ secrets.EC2_IP_1 }} "rm -rf /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar"
+    - name: Copy JAR built in step 1 from local to app server
+      run: scp -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_1 -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP_1 }}:/home/ubuntu/backend/turno-backend-master
+    - run: echo "ENV_PID_1=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_1 ubuntu@${{ secrets.EC2_IP_1 }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - name: kill process
+      if: ${{env.ENV_PID_1 != ''}}
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_1 ubuntu@${{ secrets.EC2_IP_1 }} "kill -9 $ENV_PID"
+    - name: Run the new JAR
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_1 ubuntu@${{ secrets.EC2_IP_1 }} "java -jar /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> /home/ubuntu/backend/turno-backend-master/javaOutput.log &"
+    - name: sleep
+      run: sleep 5
+    - name: PID 
+      run: echo "ENV_PID_DEPLOYED_1=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_1 ubuntu@${{ secrets.EC2_IP_1 }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - name: Check If deployement is successful
+      if: ${{env.ENV_PID_DEPLOYED_1 == ''}}
+      run: exit 1
+    - name: Start Deploment of seccond server
+      run: ssh-keyscan ${{ secrets.EC2_IP_2 }} > known_hosts_2
+    - name: update property
+      run: sudo chmod 600 known_hosts_2
+    - name: remove old jar file
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_2 ubuntu@${{ secrets.EC2_IP_2 }} "rm -rf /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar"
+    - name: Copy JAR built in step 1 from local to app server
+      run: scp -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_2 -i key.pem /home/runner/work/DeploymentTest/DeploymentTest/target/DeploymentTest-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.EC2_IP_2 }}:/home/ubuntu/backend/turno-backend-master
+    - run: echo "ENV_PID2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_2 ubuntu@${{ secrets.EC2_IP }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - name: kill process
+      if: ${{env.ENV_PID2 != ''}}
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_2 ubuntu@${{ secrets.EC2_IP_2 }} "kill -9 $ENV_PID2"
+    - name: Run the new JAR
+      run: ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_2 ubuntu@${{ secrets.EC2_IP_2 }} "java -jar /home/ubuntu/backend/turno-backend-master/DeploymentTest-0.0.1-SNAPSHOT.jar --logging.path=/home/ubuntu/backend/turno-backend-master/logs/ &> /home/ubuntu/backend/turno-backend-master/javaOutput.log &"
+    - name: sleep
+      run: sleep 5
+    - name: PID 
+      run: echo "ENV_PID_DEPLOYED2=$(ssh -i key.pem -o UserKnownHostsFile=/home/runner/work/DeploymentTest/DeploymentTest/known_hosts_2 ubuntu@${{ secrets.EC2_IP_2 }} "lsof -t -i:8080")" >> $GITHUB_ENV
+    - name: Check If deployement is successful
+      if: ${{env.ENV_PID_DEPLOYED2 == ''}}
+      run: exit 1
